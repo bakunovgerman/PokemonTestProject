@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="pokemon_list_item_image_size">100dp</dimen>
+    <dimen name="normal_text_size">18sp</dimen>
+    <dimen name="big_text_size">22sp</dimen>
+    <dimen name="margin_10dp">10dp</dimen>
+    <dimen name="height_line_spacer">1dp</dimen>
+    <dimen name="small_text_size">16sp</dimen>
+</resources>
