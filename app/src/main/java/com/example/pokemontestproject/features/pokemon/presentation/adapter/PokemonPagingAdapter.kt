@@ -5,22 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.pokemontestproject.R
 import com.example.pokemontestproject.databinding.ItemPokemonLayoutBinding
 import com.example.pokemontestproject.features.pokemon.presentation.models.PokemonListItemPresentationModel
 
-class PokemonAdapter : RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder>() {
+class PokemonPagingAdapter :
+    PagingDataAdapter<PokemonListItemPresentationModel, PokemonPagingAdapter.PokemonViewHolder>(
+        PokemonDiffUtilsCallback()
+    ) {
 
-    private val differ = AsyncListDiffer(this, PokemonDiffUtilsCallback())
-
-    fun setData(items: List<PokemonListItemPresentationModel>) {
-        differ.submitList(items)
-    }
-
-    inner class PokemonViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class PokemonViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         private val binding = ItemPokemonLayoutBinding.bind(view)
         private val context = binding.root.context
@@ -56,8 +53,7 @@ class PokemonAdapter : RecyclerView.Adapter<PokemonAdapter.PokemonViewHolder>() 
     }
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
-        holder.bind(differ.currentList[position])
+        val item = getItem(position) ?: return
+        holder.bind(item)
     }
-
-    override fun getItemCount(): Int = differ.currentList.size
 }
