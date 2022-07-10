@@ -14,5 +14,6 @@
     <string name="filter">Фильтрация</string>
     <string name="attack_info">Attack: %s</string>
     <string name="defense_info">Defense: %s</string>
-    <string name="hp_info">hp: %s</string>
+    <string name="hp_info">Hp: %s</string>
+    <string name="id_info">Id: %s</string>
 </resources>

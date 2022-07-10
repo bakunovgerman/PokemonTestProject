@@ -80,6 +80,8 @@ dependencies {
     // Dagger 2
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-    // Paging 3
-    implementation "androidx.paging:paging-runtime:$paging_version"
+    // Adapter delegate
+    implementation "com.hannesdorfmann:adapterdelegates4-kotlin-dsl:$adapter_delegate"
+    // Adapter delegate with ViewBinding
+    implementation "com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:$adapter_delegate"
 }

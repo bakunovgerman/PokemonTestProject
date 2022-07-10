@@ -8,4 +8,6 @@ data class PokemonListItemPresentationModel(
     val defense: Int?,
     val hp: Int?,
     val isSelected: Boolean = false
-)
+) : ListItem {
+    override val idItem: Int = id ?: name.hashCode()
+}
