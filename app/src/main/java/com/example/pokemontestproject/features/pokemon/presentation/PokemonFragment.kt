@@ -14,6 +14,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.pokemontestproject.R
 import com.example.pokemontestproject.databinding.FragmentPokemonBinding
 import com.example.pokemontestproject.features.pokemon.presentation.PokemonViewModel.Companion.PAGE_SIZE
+import com.example.pokemontestproject.features.pokemon.presentation.PokemonViewModel.ViewState.Success.Action
 import com.example.pokemontestproject.features.pokemon.presentation.adapter.PaginationScrollListener
 import com.example.pokemontestproject.features.pokemon.presentation.adapter.PokemonListDelegationAdapter
 import com.example.pokemontestproject.features.pokemon.presentation.adapter.loaderAdapterDelegate
@@ -34,6 +35,10 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
         },
         loaderAdapterDelegate()
     )
+    private val linearLayoutManager by lazy {
+        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+    }
+
     private var isLoading: Boolean = false
     private var isLastPage: Boolean = false
 
@@ -58,6 +63,9 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
                             isLoading = false
                             isLastPage = viewState.data.size < PAGE_SIZE
                             pokemonAdapter.items = viewState.data
+                            if (viewState.action == Action.START_POSITION) {
+                                linearLayoutManager.scrollToPositionWithOffset(0, 0)
+                            }
                         }
                         PokemonViewModel.ViewState.Loading -> {
                             binding.loadingLayout.visibility = View.VISIBLE
@@ -73,9 +81,10 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
 
     private fun initUi() {
         binding.recyclerView.apply {
+            layoutManager = linearLayoutManager
             adapter = pokemonAdapter
             val paginationScrollListener = object :
-                PaginationScrollListener(layoutManager as? LinearLayoutManager) {
+                PaginationScrollListener(linearLayoutManager) {
                 override fun loadMoreItems() {
                     this@PokemonFragment.isLoading = true
                     pokemonViewModel.loadNextPage()
@@ -86,7 +95,26 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
             }
             addOnScrollListener(paginationScrollListener)
         }
-        binding.tryAgainButton.setOnClickListener {
+        initListeners()
+    }
+
+    private fun initListeners() = with(binding) {
+        listOf(attackCheckBox, defenseCheckBox, hpCheckBox).forEach {
+            it.setOnCheckedChangeListener { checkBoxView, isChecked ->
+                pokemonViewModel.changeSpecifications(
+                    checkBoxId = checkBoxView.id,
+                    isChecked = isChecked
+                )
+            }
+        }
+        listOf(searchRadioButton, sortRadioButton).forEach {
+            it.setOnCheckedChangeListener { radioButtonView, isChecked ->
+                if (isChecked) {
+                    pokemonViewModel.changeTypeMapping(radioButtonId = radioButtonView.id)
+                }
+            }
+        }
+        tryAgainButton.setOnClickListener {
             binding.errorLayout.visibility = View.VISIBLE
             pokemonViewModel.loadCurrentPage()
         }

@@ -25,7 +25,7 @@ fun PokemonPresentationModel.mapToListItemModel() = PokemonListItemPresentationM
     id = id,
     name = name ?: "",
     imageUrl = sprites?.frontDefault,
-    attack = stats.find { it.name == ATTACK }?.baseStat,
-    defense = stats.find { it.name == DEFENSE }?.baseStat,
-    hp = stats.find { it.name == HP }?.baseStat
+    attack = stats.find { it.name == ATTACK }?.baseStat ?: 0,
+    defense = stats.find { it.name == DEFENSE }?.baseStat ?: 0,
+    hp = stats.find { it.name == HP }?.baseStat ?: 0
 )
