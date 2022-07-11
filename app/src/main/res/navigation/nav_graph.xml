@@ -2,7 +2,8 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph">
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/pokemonFragment">
 
     <fragment
         android:id="@+id/pokemonFragment"
@@ -11,7 +12,11 @@
 
         <action
             android:id="@+id/action_pokemon_fragment_to_pokemon_detail_fragment"
-            app:destination="@id/pokemonDetailFragment" />
+            app:destination="@id/pokemonDetailFragment"
+            app:enterAnim="@anim/slide_out_right"
+            app:exitAnim="@anim/slide_no_change"
+            app:popEnterAnim="@anim/slide_no_change"
+            app:popExitAnim="@anim/slide_in_left"/>
 
     </fragment>
 

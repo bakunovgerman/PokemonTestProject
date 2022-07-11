@@ -1,6 +1,7 @@
 package com.example.pokemontestproject.features.pokemon.data.network.models.pokemon_detail
 
 
+import com.example.pokemontestproject.features.pokemon.data.db.entities.PokemonDetailEntity
 import com.example.pokemontestproject.features.pokemon.domain.models.pokemon_detail.SpritesDomainModel
 import com.squareup.moshi.Json
 
@@ -11,4 +12,6 @@ class Sprites(
     val frontDefault: String?
 ) {
     fun mapToDomain() = SpritesDomainModel(backDefault = backDefault, frontDefault = frontDefault)
+    fun mapToEntity() =
+        PokemonDetailEntity.SpritesDbModel(backDefault = backDefault, frontDefault = frontDefault)
 }

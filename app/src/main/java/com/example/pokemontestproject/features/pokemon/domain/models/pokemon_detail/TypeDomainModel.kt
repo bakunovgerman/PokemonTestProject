@@ -1,3 +1,7 @@
 package com.example.pokemontestproject.features.pokemon.domain.models.pokemon_detail
 
-class TypeDomainModel(val name: String)
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+class TypeDomainModel(val name: String) : Parcelable

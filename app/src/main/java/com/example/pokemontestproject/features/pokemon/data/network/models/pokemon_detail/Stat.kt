@@ -1,6 +1,7 @@
 package com.example.pokemontestproject.features.pokemon.data.network.models.pokemon_detail
 
 
+import com.example.pokemontestproject.features.pokemon.data.db.entities.PokemonDetailEntity
 import com.example.pokemontestproject.features.pokemon.domain.models.pokemon_detail.StatDomainModel
 import com.squareup.moshi.Json
 
@@ -13,4 +14,10 @@ class Stat(
 ) {
     fun mapToDomain() =
         StatDomainModel(baseStat = baseStat, effort = effort, name = statInfo?.name ?: "")
+
+    fun mapToEntity() = PokemonDetailEntity.StatDbModel(
+        baseStat = baseStat,
+        effort = effort,
+        name = statInfo?.name ?: ""
+    )
 }

@@ -5,19 +5,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.pokemontestproject.R
 import com.example.pokemontestproject.features.pokemon.domain.usecases.interfaces.GetPokemonListUseCase
-import com.example.pokemontestproject.features.pokemon.presentation.PokemonViewModel.MappingPokemonListState.Specifications
-import com.example.pokemontestproject.features.pokemon.presentation.PokemonViewModel.MappingPokemonListState.TypeMapping
+import com.example.pokemontestproject.features.pokemon.presentation.PokemonViewModel.MappingState.Specifications
+import com.example.pokemontestproject.features.pokemon.presentation.PokemonViewModel.MappingState.TypeMapping
 import com.example.pokemontestproject.features.pokemon.presentation.PokemonViewModel.ViewState.Success.Action
 import com.example.pokemontestproject.features.pokemon.presentation.mapper.mapToListItemModel
 import com.example.pokemontestproject.features.pokemon.presentation.mapper.mapToPresentation
 import com.example.pokemontestproject.features.pokemon.presentation.models.ListItem
 import com.example.pokemontestproject.features.pokemon.presentation.models.LoaderModel
 import com.example.pokemontestproject.features.pokemon.presentation.models.PokemonListItemPresentationModel
+import com.example.pokemontestproject.features.pokemon.presentation.models.PokemonPresentationModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.random.Random
 
 class PokemonViewModel @Inject constructor(
     private val getPokemonListUseCase: GetPokemonListUseCase
@@ -25,28 +27,34 @@ class PokemonViewModel @Inject constructor(
 
     private val _viewStateStateFlow = MutableStateFlow<ViewState>(ViewState.Loading)
     val viewStateStateFlow = _viewStateStateFlow.asStateFlow()
-    private var mappingPokemonListState = MappingPokemonListState(
+    private var mappingState = MappingState(
         specifications = mutableSetOf(),
         typeMapping = TypeMapping.SEARCH
     )
     private var page = 0
-    private val pokemonList = mutableListOf<PokemonListItemPresentationModel>()
+    private val pokemonList = mutableListOf<PokemonPresentationModel>()
+    private var totalCountPokemon = 0
+    private var lastCountLoadedPokemon = 0
 
     init {
         getPokemonList(page)
     }
 
-    private fun getPokemonList(offset: Int) {
+    private fun getPokemonList(offset: Int, isResetList: Boolean = false) {
         viewModelScope.launch {
             getPokemonListUseCase(limit = PAGE_SIZE, offset = offset)
                 .catch { t ->
                     _viewStateStateFlow.value = ViewState.Error(message = t.message.toString())
                 }
-                .collect { newPokemonList ->
-                    pokemonList.addAll(newPokemonList.map {
-                        it.mapToPresentation().mapToListItemModel()
+                .collect { pokemonDetailListWithPagingData ->
+                    totalCountPokemon = pokemonDetailListWithPagingData.totalCountItems
+                    lastCountLoadedPokemon = pokemonDetailListWithPagingData.pokemonDetailList.size
+                    if (isResetList) pokemonList.clear()
+                    pokemonList.addAll(pokemonDetailListWithPagingData.pokemonDetailList.map {
+                        it.mapToPresentation()
                     })
-                    setSuccessData(mappingPokemonList())
+
+                    setSuccessData(items = mappingPokemonList(), isNeedStartPosition = isResetList)
                 }
         }
     }
@@ -55,9 +63,14 @@ class PokemonViewModel @Inject constructor(
 
     fun loadCurrentPage() = getPokemonList(offset = page * PAGE_SIZE)
 
+    fun loadRandomPage() {
+        page = Random.nextInt(0, totalCountPokemon / PAGE_SIZE)
+        getPokemonList(offset = page * PAGE_SIZE, isResetList = true)
+    }
+
     private fun mappingPokemonList(): List<PokemonListItemPresentationModel> =
-        with(mappingPokemonListState) {
-            val mappedPokemonList = pokemonList
+        with(mappingState) {
+            val mappedPokemonList = pokemonList.map { it.mapToListItemModel() }.toMutableList()
             if (specifications.isNotEmpty()) {
                 when (typeMapping) {
                     TypeMapping.SEARCH -> {
@@ -73,9 +86,11 @@ class PokemonViewModel @Inject constructor(
 
     private fun sortedPokemonList(
         mappedPokemonList: List<PokemonListItemPresentationModel>
-    ): List<PokemonListItemPresentationModel> = with(mappingPokemonListState) {
+    ): List<PokemonListItemPresentationModel> = with(mappingState) {
         when {
-            specifications.any { it == Specifications.ATTACK && it == Specifications.DEFENSE && it == Specifications.HP } -> {
+            specifications.contains(Specifications.ATTACK)
+                    && specifications.contains(Specifications.DEFENSE)
+                    && specifications.contains(Specifications.HP) -> {
                 return mappedPokemonList.sortedWith(
                     compareBy(
                         { it.attack },
@@ -83,21 +98,23 @@ class PokemonViewModel @Inject constructor(
                         { it.hp })
                 ).reversed()
             }
-            specifications.any { it == Specifications.ATTACK && it == Specifications.DEFENSE } -> {
+            specifications.contains(Specifications.ATTACK) && specifications.contains(Specifications.DEFENSE) -> {
                 return mappedPokemonList.sortedWith(
                     compareBy(
                         { it.attack },
                         { it.defense })
                 ).reversed()
             }
-            specifications.any { it == Specifications.ATTACK && it == Specifications.HP } -> {
+            specifications.contains(Specifications.ATTACK) && specifications.contains(Specifications.HP) -> {
                 return mappedPokemonList.sortedWith(
                     compareBy(
                         { it.attack },
                         { it.hp })
                 ).reversed()
             }
-            specifications.any { it == Specifications.DEFENSE && it == Specifications.HP } -> {
+            specifications.contains(Specifications.DEFENSE) && specifications.contains(
+                Specifications.HP
+            ) -> {
                 return mappedPokemonList.sortedWith(
                     compareBy(
                         { it.defense },
@@ -117,11 +134,13 @@ class PokemonViewModel @Inject constructor(
     }
 
     private fun searchPokemon(mappingPokemonList: MutableList<PokemonListItemPresentationModel>): List<PokemonListItemPresentationModel> =
-        with(mappingPokemonListState) {
+        with(mappingState) {
             val maxItem = sortedPokemonList(mappingPokemonList).first().copy(isSelected = true)
-            mappingPokemonList.remove(maxItem)
-            mappingPokemonList.add(0, maxItem)
-            return@with mappingPokemonList
+            val pokemonListNotSelected =
+                mappingPokemonList.map { it.copy(isSelected = false) }.toMutableList()
+            pokemonListNotSelected.remove(maxItem)
+            pokemonListNotSelected.add(0, maxItem)
+            return@with pokemonListNotSelected
         }
 
     fun changeSpecifications(@IdRes checkBoxId: Int, isChecked: Boolean) {
@@ -132,11 +151,11 @@ class PokemonViewModel @Inject constructor(
             else -> null
         }
         if (specification != null) {
-            val specificationsSet = mappingPokemonListState.specifications
+            val specificationsSet = mappingState.specifications
             if (isChecked) specificationsSet.add(specification)
             else specificationsSet.remove(specification)
-            mappingPokemonListState =
-                mappingPokemonListState.copy(specifications = specificationsSet)
+            mappingState =
+                mappingState.copy(specifications = specificationsSet)
         }
         setSuccessData(mappingPokemonList())
     }
@@ -148,21 +167,24 @@ class PokemonViewModel @Inject constructor(
             else -> null
         }
         if (type != null) {
-            mappingPokemonListState = mappingPokemonListState.copy(typeMapping = type)
+            mappingState = mappingState.copy(typeMapping = type)
         }
         setSuccessData(items = mappingPokemonList())
     }
 
-    private fun setSuccessData(items: List<ListItem>) {
+    private fun setSuccessData(items: List<ListItem>, isNeedStartPosition: Boolean = false) {
         val listForAdapterDelegate: MutableList<ListItem> = items.toMutableList().apply {
             // если страницы не закончились, то добавляем вниз лоудер
-            if (this.size >= PAGE_SIZE) {
-                add(LoaderModel(0))
+            if (this.size < totalCountPokemon && lastCountLoadedPokemon == PAGE_SIZE) {
+                add(LoaderModel(LOADER_ID))
             }
         }
-        val action = when(mappingPokemonListState.typeMapping) {
-            TypeMapping.SEARCH -> Action.START_POSITION
-            TypeMapping.SORT -> Action.NOTHING
+        val action = if (mappingState.typeMapping == TypeMapping.SEARCH
+            && mappingState.specifications.isNotEmpty() || isNeedStartPosition
+        ) {
+            Action.START_POSITION
+        } else {
+            Action.NOTHING
         }
         _viewStateStateFlow.value = ViewState.Success(
             data = listForAdapterDelegate,
@@ -170,7 +192,11 @@ class PokemonViewModel @Inject constructor(
         )
     }
 
-    data class MappingPokemonListState(
+    fun getPokemonById(idPokemon: Int): PokemonPresentationModel? {
+        return pokemonList.find { it.id == idPokemon }
+    }
+
+    data class MappingState(
         val specifications: MutableSet<Specifications>,
         val typeMapping: TypeMapping
     ) {
@@ -191,10 +217,11 @@ class PokemonViewModel @Inject constructor(
         }
 
         object Loading : ViewState()
-        class Error(message: String) : ViewState()
+        class Error(val message: String) : ViewState()
     }
 
     companion object {
         const val PAGE_SIZE = 30
+        private const val LOADER_ID = 0
     }
 }

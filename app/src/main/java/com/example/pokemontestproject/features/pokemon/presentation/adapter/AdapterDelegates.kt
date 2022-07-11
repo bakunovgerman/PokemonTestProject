@@ -12,12 +12,12 @@ import com.example.pokemontestproject.features.pokemon.presentation.models.Loade
 import com.example.pokemontestproject.features.pokemon.presentation.models.PokemonListItemPresentationModel
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 
-fun pokemonAdapterDelegate(itemClickedListener: (PokemonListItemPresentationModel) -> Unit) =
+fun pokemonAdapterDelegate(itemClickedListener: (Int) -> Unit) =
     adapterDelegateViewBinding<PokemonListItemPresentationModel, ListItem, ItemPokemonLayoutBinding>(
         { layoutInflater, root -> ItemPokemonLayoutBinding.inflate(layoutInflater, root, false) }
     ) {
         binding.root.setOnClickListener {
-            itemClickedListener(item)
+            item.id?.let { itemClickedListener(it) }
         }
         bind {
             with(binding) {

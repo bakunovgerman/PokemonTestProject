@@ -1,5 +1,6 @@
 package com.example.pokemontestproject.features.pokemon.data.network.models.pokemon_detail
 
+import com.example.pokemontestproject.features.pokemon.data.db.entities.PokemonDetailEntity
 import com.example.pokemontestproject.features.pokemon.domain.models.pokemon_detail.PokemonDetailDomainModel
 import com.squareup.moshi.Json
 
@@ -29,6 +30,20 @@ class PokemonDetailResponse(
         sprites = this.sprites?.mapToDomain(),
         stats = this.stats?.map { it.mapToDomain() } ?: emptyList(),
         types = this.types?.map { it.typeInfo?.mapToDomain() } ?: emptyList(),
+        weight = this.weight
+    )
+
+    fun mapToEntity() = PokemonDetailEntity(
+        baseExperience = this.baseExperience,
+        height = this.height,
+        id = this.id,
+        isDefault = this.isDefault,
+        name = this.name,
+        order = this.order,
+        species = this.species?.mapToEntity(),
+        sprites = this.sprites?.mapToEntity(),
+        stats = this.stats?.map { it.mapToEntity() } ?: emptyList(),
+        types = this.types?.map { it.typeInfo?.mapToEntity() } ?: emptyList(),
         weight = this.weight
     )
 }

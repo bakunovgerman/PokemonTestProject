@@ -1,7 +1,9 @@
 package com.example.pokemontestproject.di
 
+import android.content.Context
 import com.example.pokemontestproject.di.view_model.ViewModelModule
 import com.example.pokemontestproject.features.pokemon.presentation.PokemonFragment
+import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
@@ -12,4 +14,9 @@ import javax.inject.Singleton
 interface AppComponent {
 
     fun inject(pokemonFragment: PokemonFragment)
+
+    @Component.Factory
+    interface Factory {
+        fun create(@BindsInstance context: Context): AppComponent
+    }
 }

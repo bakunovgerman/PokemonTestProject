@@ -3,12 +3,15 @@ package com.example.pokemontestproject.features.pokemon.presentation
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.pokemontestproject.R
@@ -19,6 +22,7 @@ import com.example.pokemontestproject.features.pokemon.presentation.adapter.Pagi
 import com.example.pokemontestproject.features.pokemon.presentation.adapter.PokemonListDelegationAdapter
 import com.example.pokemontestproject.features.pokemon.presentation.adapter.loaderAdapterDelegate
 import com.example.pokemontestproject.features.pokemon.presentation.adapter.pokemonAdapterDelegate
+import com.example.pokemontestproject.features.pokemon_detail.presentation.PokemonDetailFragment.Companion.ARG_POKEMON_DETAIL
 import com.example.pokemontestproject.getAppComponent
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,14 +34,11 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
     private val pokemonViewModel by viewModels<PokemonViewModel> { viewModelFactory }
     private val binding: FragmentPokemonBinding by viewBinding()
     private val pokemonAdapter = PokemonListDelegationAdapter(
-        pokemonAdapterDelegate {
-
+        pokemonAdapterDelegate { idPokemon ->
+            navigateToPokemonDetail(idPokemon = idPokemon)
         },
         loaderAdapterDelegate()
     )
-    private val linearLayoutManager by lazy {
-        LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-    }
 
     private var isLoading: Boolean = false
     private var isLastPage: Boolean = false
@@ -59,19 +60,21 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
                 pokemonViewModel.viewStateStateFlow.collect { viewState ->
                     when (viewState) {
                         is PokemonViewModel.ViewState.Success -> {
-                            binding.loadingLayout.visibility = View.INVISIBLE
+                            binding.refreshLayout.isRefreshing = false
                             isLoading = false
                             isLastPage = viewState.data.size < PAGE_SIZE
                             pokemonAdapter.items = viewState.data
                             if (viewState.action == Action.START_POSITION) {
-                                linearLayoutManager.scrollToPositionWithOffset(0, 0)
+                                binding.recyclerView.smoothScrollToPosition(0)
                             }
+                            binding.randomListButton.isEnabled = true
                         }
                         PokemonViewModel.ViewState.Loading -> {
-                            binding.loadingLayout.visibility = View.VISIBLE
+                            binding.refreshLayout.isRefreshing = true
                         }
                         is PokemonViewModel.ViewState.Error -> {
                             binding.errorLayout.visibility = View.VISIBLE
+                            Toast.makeText(context, viewState.message, Toast.LENGTH_LONG).show()
                         }
                     }
                 }
@@ -81,10 +84,9 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
 
     private fun initUi() {
         binding.recyclerView.apply {
-            layoutManager = linearLayoutManager
             adapter = pokemonAdapter
             val paginationScrollListener = object :
-                PaginationScrollListener(linearLayoutManager) {
+                PaginationScrollListener(layoutManager as? LinearLayoutManager) {
                 override fun loadMoreItems() {
                     this@PokemonFragment.isLoading = true
                     pokemonViewModel.loadNextPage()
@@ -115,8 +117,20 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
             }
         }
         tryAgainButton.setOnClickListener {
-            binding.errorLayout.visibility = View.VISIBLE
+            binding.errorLayout.visibility = View.INVISIBLE
             pokemonViewModel.loadCurrentPage()
         }
+        randomListButton.setOnClickListener {
+            binding.refreshLayout.isRefreshing = true
+            pokemonViewModel.loadRandomPage()
+        }
+    }
+
+    private fun navigateToPokemonDetail(idPokemon: Int) {
+        val pokemonDetail = pokemonViewModel.getPokemonById(idPokemon = idPokemon)
+        findNavController().navigate(
+            R.id.action_pokemon_fragment_to_pokemon_detail_fragment,
+            bundleOf(ARG_POKEMON_DETAIL to pokemonDetail)
+        )
     }
 }

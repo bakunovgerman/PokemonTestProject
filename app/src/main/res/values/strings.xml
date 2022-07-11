@@ -1,19 +1,25 @@
 <resources>
     <string name="app_name">PokemonTestProject</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="default_error_message">Упс, произошла ошибка!</string>
-    <string name="try_again">Повторить</string>
-    <string name="pokemon">Покемоны</string>
+    <string name="default_error_message">Oops, an error has occurred!</string>
+    <string name="try_again">Try Again</string>
+    <string name="pokemon">Pokemon</string>
     <string name="attack">attack</string>
     <string name="defense">defense</string>
     <string name="hp">hp</string>
-    <string name="search">Поиск</string>
-    <string name="choose_characteristic">Выберите характеристику</string>
-    <string name="choose_type">Выберите тип</string>
+    <string name="search">Search</string>
+    <string name="choose_characteristic">Select a characteristic</string>
+    <string name="choose_type">Select the type</string>
     <string name="attack_info">Attack: %s</string>
     <string name="defense_info">Defense: %s</string>
     <string name="hp_info">Hp: %s</string>
     <string name="id_info">Id: %s</string>
-    <string name="sort">Сортировка</string>
+    <string name="sort">Sorted</string>
+    <string name="random_list">Random pokemon list</string>
+    <string name="front_image">Image Front</string>
+    <string name="back_image">Image Back</string>
+    <string name="height_info">Height: %s</string>
+    <string name="weight_info">Weight: %s</string>
+    <string name="type_info">Type: %s</string>
+    <string name="information_about_pokemon">Information about Pokemon</string>
+    <string name="detail_pokemon_title">Detail Pokemon: %s</string>
 </resources>

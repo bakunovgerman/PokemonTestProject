@@ -6,13 +6,13 @@ import androidx.fragment.app.Fragment
 import com.example.pokemontestproject.di.AppComponent
 import com.example.pokemontestproject.di.DaggerAppComponent
 
-class App: Application() {
+class App : Application() {
 
     lateinit var appComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()
-        appComponent = DaggerAppComponent.create()
+        appComponent = DaggerAppComponent.factory().create(applicationContext)
     }
 }
 
