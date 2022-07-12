@@ -2,6 +2,7 @@ package com.example.pokemontestproject.features.pokemon.presentation
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -61,12 +62,12 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
                     when (viewState) {
                         is PokemonViewModel.ViewState.Success -> {
                             binding.refreshLayout.isRefreshing = false
-                            isLoading = false
-                            isLastPage = viewState.data.size < PAGE_SIZE
                             pokemonAdapter.items = viewState.data
                             if (viewState.action == Action.START_POSITION) {
                                 binding.recyclerView.smoothScrollToPosition(0)
                             }
+                            isLoading = false
+                            isLastPage = viewState.data.size < PAGE_SIZE
                             binding.randomListButton.isEnabled = true
                         }
                         PokemonViewModel.ViewState.Loading -> {

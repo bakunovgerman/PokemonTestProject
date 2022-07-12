@@ -41,7 +41,7 @@ class PokemonRepositoryImpl @Inject constructor(
         limit: Int,
         offset: Int
     ): Flow<PokemonDetailWithPagingDomainData> = flow {
-        if (isOnline(context)) {
+        val data = if (isOnline(context)) {
             val pokemonNamesListWithPaging = getPokemonNamesListApi(limit = limit, offset = offset)
             val pokemonDetailListApi = pokemonNamesListWithPaging.pokemonNamesList.map { pokemon ->
                 getPokemonDetailApi(
@@ -49,22 +49,21 @@ class PokemonRepositoryImpl @Inject constructor(
                 )
             }
             pokemonDbDataSource.insertPokemonList(pokemonDetailListApi.map { it.mapToEntity() })
-            emit(PokemonDetailWithPagingDomainData(
+            PokemonDetailWithPagingDomainData(
                 totalCountItems = pokemonNamesListWithPaging.totalCountItems,
                 pokemonDetailList = pokemonDetailListApi.map { it.mapToDomain() }
-            ))
+            )
         } else {
             val totalCountPokemon = pokemonDbDataSource.getPokemonCount()
             val pokemonDetailList = pokemonDbDataSource.getPokemonList(
                 limit = limit,
                 offset = offset
             ).map { it.mapToDomain() }
-            emit(
-                PokemonDetailWithPagingDomainData(
-                    totalCountItems = totalCountPokemon,
-                    pokemonDetailList = pokemonDetailList
-                )
+            PokemonDetailWithPagingDomainData(
+                totalCountItems = totalCountPokemon,
+                pokemonDetailList = pokemonDetailList
             )
         }
+        emit(data)
     }.flowOn(Dispatchers.IO)
 }

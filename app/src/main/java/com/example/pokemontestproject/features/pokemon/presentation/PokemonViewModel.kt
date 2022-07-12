@@ -138,10 +138,16 @@ class PokemonViewModel @Inject constructor(
             val maxItem = sortedPokemonList(mappingPokemonList).first().copy(isSelected = true)
             val pokemonListNotSelected =
                 mappingPokemonList.map { it.copy(isSelected = false) }.toMutableList()
-            pokemonListNotSelected.remove(maxItem)
+            val removeIndex = pokemonListNotSelected.indexOfItemById(maxItem.id)
+            if (removeIndex != -1) pokemonListNotSelected.removeAt(removeIndex)
             pokemonListNotSelected.add(0, maxItem)
             return@with pokemonListNotSelected
         }
+
+    private fun List<PokemonListItemPresentationModel>.indexOfItemById(id: Int?): Int {
+        val item = this.find { it.id == id }
+        return this.indexOf(item)
+    }
 
     fun changeSpecifications(@IdRes checkBoxId: Int, isChecked: Boolean) {
         val specification = when (checkBoxId) {
