@@ -180,7 +180,7 @@ class PokemonViewModel @Inject constructor(
 
     private fun setSuccessData(items: List<ListItem>, isNeedStartPosition: Boolean = false) {
         val listForAdapterDelegate: MutableList<ListItem> = items.toMutableList().apply {
-            // если страницы не закончились, то добавляем вниз лоудер
+            // if the pages are not finished, then add the lauder down
             if (this.size < totalCountPokemon && lastCountLoadedPokemon == PAGE_SIZE) {
                 add(LoaderModel(LOADER_ID))
             }

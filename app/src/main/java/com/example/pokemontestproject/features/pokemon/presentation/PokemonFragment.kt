@@ -2,7 +2,6 @@ package com.example.pokemontestproject.features.pokemon.presentation
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -61,6 +60,7 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
                 pokemonViewModel.viewStateStateFlow.collect { viewState ->
                     when (viewState) {
                         is PokemonViewModel.ViewState.Success -> {
+                            setIsEnableView(isEnable = true)
                             binding.refreshLayout.isRefreshing = false
                             pokemonAdapter.items = viewState.data
                             if (viewState.action == Action.START_POSITION) {
@@ -99,6 +99,14 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
             addOnScrollListener(paginationScrollListener)
         }
         initListeners()
+    }
+
+    private fun setIsEnableView(isEnable: Boolean) = with(binding) {
+        hpCheckBox.isEnabled = isEnable
+        attackCheckBox.isEnabled = isEnable
+        defenseCheckBox.isEnabled = isEnable
+        searchRadioButton.isEnabled = isEnable
+        sortRadioButton.isEnabled = isEnable
     }
 
     private fun initListeners() = with(binding) {

@@ -54,6 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_10dp"
+                android:enabled="false"
                 android:text="@string/attack"
                 android:textSize="@dimen/normal_text_size"
                 app:layout_constraintEnd_toStartOf="@id/defenseCheckBox"
@@ -65,6 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_10dp"
+                android:enabled="false"
                 android:text="@string/defense"
                 android:textSize="@dimen/normal_text_size"
                 app:layout_constraintEnd_toStartOf="@id/hpCheckBox"
@@ -76,6 +78,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_10dp"
+                android:enabled="false"
                 android:text="@string/hp"
                 android:textSize="@dimen/normal_text_size"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -110,6 +113,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/margin_10dp"
                     android:checked="true"
+                    android:enabled="false"
                     android:text="@string/search"
                     android:textSize="@dimen/normal_text_size"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -121,6 +125,7 @@
                     android:id="@+id/sortRadioButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:text="@string/sort"
                     android:textSize="@dimen/normal_text_size"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -138,11 +143,11 @@
         android:id="@+id/refreshLayout"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:enabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sortedAndSearchPanel"
-        android:enabled="false">
+        app:layout_constraintTop_toBottomOf="@id/sortedAndSearchPanel">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
