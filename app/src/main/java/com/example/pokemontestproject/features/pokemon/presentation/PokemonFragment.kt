@@ -40,9 +40,6 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
         loaderAdapterDelegate()
     )
 
-    private var isLoading: Boolean = false
-    private var isLastPage: Boolean = false
-
     override fun onAttach(context: Context) {
         getAppComponent().inject(this)
         super.onAttach(context)
@@ -66,8 +63,8 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
                             if (viewState.action == Action.START_POSITION) {
                                 binding.recyclerView.smoothScrollToPosition(0)
                             }
-                            isLoading = false
-                            isLastPage = viewState.data.size < PAGE_SIZE
+                            pokemonViewModel.isLoading = false
+                            pokemonViewModel.isLastPage = viewState.data.size < PAGE_SIZE
                             binding.randomListButton.isEnabled = true
                         }
                         PokemonViewModel.ViewState.Loading -> {
@@ -89,12 +86,12 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
             val paginationScrollListener = object :
                 PaginationScrollListener(layoutManager as? LinearLayoutManager) {
                 override fun loadMoreItems() {
-                    this@PokemonFragment.isLoading = true
+                    pokemonViewModel.isLoading = true
                     pokemonViewModel.loadNextPage()
                 }
 
-                override val isLastPage: Boolean get() = this@PokemonFragment.isLastPage
-                override val isLoading: Boolean get() = this@PokemonFragment.isLoading
+                override val isLastPage: Boolean get() = pokemonViewModel.isLastPage
+                override val isLoading: Boolean get() = pokemonViewModel.isLoading
             }
             addOnScrollListener(paginationScrollListener)
         }
@@ -107,6 +104,7 @@ class PokemonFragment : Fragment(R.layout.fragment_pokemon) {
         defenseCheckBox.isEnabled = isEnable
         searchRadioButton.isEnabled = isEnable
         sortRadioButton.isEnabled = isEnable
+        randomListButton.isEnabled = isEnable
     }
 
     private fun initListeners() = with(binding) {

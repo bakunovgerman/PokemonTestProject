@@ -14,6 +14,7 @@ import com.example.pokemontestproject.features.pokemon.presentation.models.ListI
 import com.example.pokemontestproject.features.pokemon.presentation.models.LoaderModel
 import com.example.pokemontestproject.features.pokemon.presentation.models.PokemonListItemPresentationModel
 import com.example.pokemontestproject.features.pokemon.presentation.models.PokemonPresentationModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -35,13 +36,17 @@ class PokemonViewModel @Inject constructor(
     private val pokemonList = mutableListOf<PokemonPresentationModel>()
     private var totalCountPokemon = 0
     private var lastCountLoadedPokemon = 0
+    private var jobGetPokemon: Job? = null
+    var isLoading: Boolean = false
+    var isLastPage: Boolean = false
 
     init {
         getPokemonList(page)
     }
 
     private fun getPokemonList(offset: Int, isResetList: Boolean = false) {
-        viewModelScope.launch {
+        jobGetPokemon?.cancel()
+        jobGetPokemon = viewModelScope.launch {
             getPokemonListUseCase(limit = PAGE_SIZE, offset = offset)
                 .catch { t ->
                     _viewStateStateFlow.value = ViewState.Error(message = t.message.toString())

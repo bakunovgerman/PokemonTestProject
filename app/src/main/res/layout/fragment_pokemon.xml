@@ -166,7 +166,8 @@
         android:contentDescription="@string/random_list"
         android:src="@drawable/ic_random"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:enabled="false"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/errorLayout"

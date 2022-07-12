@@ -58,7 +58,8 @@
                 android:textSize="@dimen/normal_text_size"
                 app:layout_constraintEnd_toStartOf="@id/defenseCheckBox"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/chooseCharacteristicTextView" />
+                app:layout_constraintTop_toBottomOf="@id/chooseCharacteristicTextView"
+                android:enabled="false"/>
 
             <CheckBox
                 android:id="@+id/defenseCheckBox"
@@ -69,7 +70,8 @@
                 android:textSize="@dimen/normal_text_size"
                 app:layout_constraintEnd_toStartOf="@id/hpCheckBox"
                 app:layout_constraintStart_toEndOf="@id/attackCheckBox"
-                app:layout_constraintTop_toBottomOf="@id/chooseCharacteristicTextView" />
+                app:layout_constraintTop_toBottomOf="@id/chooseCharacteristicTextView"
+                android:enabled="false"/>
 
             <CheckBox
                 android:id="@+id/hpCheckBox"
@@ -79,7 +81,8 @@
                 android:text="@string/hp"
                 android:textSize="@dimen/normal_text_size"
                 app:layout_constraintStart_toEndOf="@id/defenseCheckBox"
-                app:layout_constraintTop_toBottomOf="@id/chooseCharacteristicTextView" />
+                app:layout_constraintTop_toBottomOf="@id/chooseCharacteristicTextView"
+                android:enabled="false"/>
 
             <TextView
                 android:id="@+id/chooseTypeTextView"
@@ -115,7 +118,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/sortRadioButton"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/chooseTypeTextView" />
+                    app:layout_constraintTop_toBottomOf="@id/chooseTypeTextView"
+                    android:enabled="false"/>
 
                 <RadioButton
                     android:id="@+id/sortRadioButton"
@@ -126,7 +130,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/searchRadioButton"
-                    app:layout_constraintTop_toBottomOf="@id/chooseTypeTextView" />
+                    app:layout_constraintTop_toBottomOf="@id/chooseTypeTextView"
+                    android:enabled="false"/>
 
             </RadioGroup>
 
@@ -161,7 +166,8 @@
         android:contentDescription="@string/random_list"
         android:src="@drawable/ic_random"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:enabled="false"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/errorLayout"
